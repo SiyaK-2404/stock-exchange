@@ -1,0 +1,13 @@
+{
+"symbol":"TSLA",
+"buyOrders":[
+
+],
+"sellOrders":[
+{"price":95,"quantity":20},
+{"price":110,"quantity":20}
+],
+"trades":[
+{"price":95,"quantity":10}
+]
+}
