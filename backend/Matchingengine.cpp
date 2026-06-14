@@ -304,7 +304,7 @@ void MatchingEngine::runBenchmark(
 
     double ordersPerSecond =
         (numOrders * 1000.0)
-        / std::max(1LL, duration.count());
+        / std::max<long long>(1LL, duration.count());
 
     std::cout
         << "\n===== BENCHMARK =====\n";
