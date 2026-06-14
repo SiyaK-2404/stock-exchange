@@ -34,7 +34,8 @@ interface BenchmarkStats {
   ordersPerSec: number | null;
 }
 
-const API_BASE = "http://localhost:8000";
+// Configurable via .env: VITE_API_BASE=https://your-backend.onrender.com
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 const POLL_INTERVAL_MS = 2000;
 
 const OrderTable: React.FC<{
@@ -465,4 +466,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-

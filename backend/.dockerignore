@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.json
+exchange
+exchange.exe
+exchange_new.exe
+.git

@@ -1,23 +1,3 @@
-"""
-FastAPI bridge for the C++ matching engine.
-
-Architecture
-------------
-- On startup, launches the compiled C++ engine binary (exchange.exe / exchange)
-  as a single long-lived subprocess.
-- Commands are written to its stdin in the same text format the engine's
-  REPL already understands (BUY, SELL, CANCEL, EXPORT, etc).
-- After each command, the engine prints "OK <COMMAND> ..." to stdout
-  (this requires the patched main.cpp with std::cout.setf(std::ios::unitbuf)
-  and "OK ..." markers after every command).
-- For order book / trade data, we send "EXPORT <symbol>", wait for the "OK EXPORT"
-  marker, then read the <symbol>.json file the engine writes to disk.
-
-Run with:
-    pip install fastapi uvicorn
-    uvicorn server:app --reload --port 8000
-"""
-
 import asyncio
 import json
 import os
@@ -44,6 +24,11 @@ ENGINE_CWD = os.environ.get("ENGINE_CWD", ".")
 
 # How long (seconds) to wait for the engine to respond before giving up.
 COMMAND_TIMEOUT = 5.0
+
+# Comma-separated list of allowed CORS origins, e.g.
+# "https://my-frontend.vercel.app,http://localhost:5173"
+# Defaults to "*" (allow all) for local development.
+CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
 
 
 # ---------------------------------------------------------------------------
@@ -130,9 +115,13 @@ known_symbols: set[str] = {"AAPL", "GOOGL", "MSFT", "TSLA", "AMZN"}
 
 app = FastAPI(title="Matching Engine Bridge")
 
+_origins = (
+    ["*"] if CORS_ORIGINS == "*" else [o.strip() for o in CORS_ORIGINS.split(",")]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this in production
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
